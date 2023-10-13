@@ -1,101 +1,31 @@
-import 'bootstrap/dist/css/bootstrap.min.css'
-import './static/App.css';
+import React, { useState, useEffect } from "react";
+import ApplicationPage from "./application";
+import LoginPage from "./login/LoginPage";
 
-import React from 'react';
-import Sidebar from './sidebar/Sidebar'
-import ApplicationPage from './application/ApplicationPage'
-import SearchPage from './search/SearchPage'
-import LoginPage from './login/LoginPage'
-import ManageResumePage from './resume/ManageResumePage'
-
-
-export default class App extends React.Component {
-  constructor(props){
-    super(props)
-    let mapRouter = {
-      'SearchPage': <SearchPage/>,
-      'ApplicationPage' : <ApplicationPage/>,
-      'LoginPage': <LoginPage/>,
-      'ManageResumePage': <ManageResumePage/>
-
-    }
-    this.state ={
-      currentPage: <LoginPage/>,
-      mapRouter: mapRouter,
-      sidebar: false,
-    }
-    this.sidebarHandler = this.sidebarHandler.bind(this);
+function App() {
+  const [currentPage, setCurrentPage] = useState(<LoginPage />);
+  const [auth, setAuth] = useState(false);
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setCurrentPage(mapRouter["LoginPage"]);
+    setAuth(false);
   };
 
-  componentDidMount() {
-    if(localStorage.getItem('token')) {
-      this.sidebarHandler()
+  const mapRouter = {
+    ApplicationPage: <ApplicationPage logout={handleLogout} />,
+    LoginPage: (
+      <LoginPage side={() => setCurrentPage(mapRouter["ApplicationPage"])} />
+    ),
+  };
+
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      setAuth(true);
+      setCurrentPage(mapRouter["ApplicationPage"]);
     }
-  }
+  }, [auth]);
 
-  sidebarHandler = () => {
-    this.setState({
-      currentPage: this.state.mapRouter['ApplicationPage'],
-      sidebar: true
-    })
-  }
-
-  handleLogout = () => {
-    localStorage.removeItem('token')
-    this.setState({
-      sidebar:false
-    })
-  }
-
-  switchPage(pageName){
-    this.setState({
-      currentPage: this.state.mapRouter[pageName]
-    })
-  }
-
-  render() {
-    var app;
-    // console.log(this.state.sidebar)
-    if(this.state.sidebar){
-      app = (<div className="main-page">
-        <Sidebar switchPage={this.switchPage.bind(this)}/>
-        <div className="main">
-          <div className="content">
-            <div className="">
-              <h1 className="text-center">My applications</h1>
-              {/* <span className="btn-icon ">
-                <button className="btn btn-danger btn-icon"><i className="fas fa-plus"></i>&nbsp;New</button>
-              </span> */}
-            </div>
-            {this.state.currentPage}
-            <button style={{position: 'absolute',
-                         top: '2vh',
-                         left:'90vw'}}
-                    onClick={this.handleLogout}>Logout
-
-            </button>
-          </div>
-        </div>
-      </div>
-      )
-    }
-    else{
-      app = (<div className="main-page">
-      <div className="main">
-        <div className="content">
-          <h1 className="text-center" style={{padding: 0.4 + 'em'}}>My applications</h1>
-          <div className="">
-            {/* <span className="btn-icon ">
-              <button className="btn btn-danger btn-icon"><i className="fas fa-plus"></i>&nbsp;New</button>
-            </span> */}
-          </div>
-          <LoginPage side={this.sidebarHandler}/>
-        </div>
-      </div>
-    </div>
-    )
-    }
-    return app;
-  }
+  return <div className="main-page">{currentPage}</div>;
 }
 
+export default App;

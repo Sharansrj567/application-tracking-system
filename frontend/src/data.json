@@ -1,0 +1,122 @@
+{
+  "boards": [
+    {
+      "name": "SDE Applications",
+      "isActive": false,
+      "columns": [
+        {
+          "name": "Applied",
+          "tasks": [
+            {
+              "title": "Google",
+              "description": "",
+              "status": "Applied",
+              "subtasks": [
+                {
+                  "title": "Online Assessment",
+                  "isCompleted": true
+                },
+                {
+                  "title": "Technical Interview",
+                  "isCompleted": true
+                },
+                {
+                  "title": "HR Interview",
+                  "isCompleted": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Rejected",
+          "tasks": [
+            {
+              "title": "JP Morgan Chase",
+              "description": "",
+              "status": "Rejected",
+              "subtasks": [
+                {
+                  "title": "Online Assessment",
+                  "isCompleted": true
+                },
+                {
+                  "title": "Behavioural Round",
+                  "isCompleted": false
+                },
+                {
+                  "title": "HR Interview",
+                  "isCompleted": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Waiting For Referral",
+          "tasks": [
+            {
+              "title": "Amazon",
+              "description": "",
+              "status": "Waiting For Senior Reply",
+              "subtasks": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "DS/ML Applications",
+      "isActive": false,
+      "columns": [
+        {
+          "name": "Applied",
+          "tasks": [
+            {
+              "title": "IBM",
+              "description": "",
+              "status": "Applied",
+              "subtasks": [
+                {
+                  "title": "Online Assessment",
+                  "isCompleted": true
+                },
+                {
+                  "title": "Triat Based Round",
+                  "isCompleted": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Rejected",
+          "tasks": [
+            {
+              "title": "Databricks",
+              "description": "",
+              "status": "Rejected",
+              "subtasks": [
+                {
+                  "title": "Online Assessment",
+                  "isCompleted": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Waiting For Referral",
+          "tasks": [
+            {
+              "title": "Goldman Sachs",
+              "description": "",
+              "status": "Waiting For Senior Reply",
+              "subtasks": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
