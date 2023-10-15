@@ -3,7 +3,6 @@ import ApplicationPage from "./application";
 import LoginPage from "./login/LoginPage";
 
 function App() {
-  const [currentPage, setCurrentPage] = useState(<LoginPage />);
   const [auth, setAuth] = useState(false);
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -11,10 +10,13 @@ function App() {
     setAuth(false);
   };
 
+ 
+  const [currentPage, setCurrentPage] = useState(     <LoginPage side={() => {setCurrentPage(mapRouter["ApplicationPage"]);setAuth(true)}} />);
+ 
   const mapRouter = {
     ApplicationPage: <ApplicationPage logout={handleLogout} />,
     LoginPage: (
-      <LoginPage side={() => setCurrentPage(mapRouter["ApplicationPage"])} />
+      <LoginPage side={() => {setCurrentPage(mapRouter["ApplicationPage"]);setAuth(true)}} />
     ),
   };
 
