@@ -6,24 +6,23 @@ function App() {
   const [auth, setAuth] = useState(false);
   const handleLogout = () => {
     localStorage.removeItem("token");
-    setCurrentPage(mapRouter["LoginPage"]);
+    setCurrentPage(
+      <LoginPage
+        side={() => setCurrentPage(<ApplicationPage logout={handleLogout} />)}
+      />
+    );
     setAuth(false);
   };
-
- 
-  const [currentPage, setCurrentPage] = useState(     <LoginPage side={() => {setCurrentPage(mapRouter["ApplicationPage"]);setAuth(true)}} />);
- 
-  const mapRouter = {
-    ApplicationPage: <ApplicationPage logout={handleLogout} />,
-    LoginPage: (
-      <LoginPage side={() => {setCurrentPage(mapRouter["ApplicationPage"]);setAuth(true)}} />
-    ),
-  };
+  const [currentPage, setCurrentPage] = useState(
+    <LoginPage
+      side={() => setCurrentPage(<ApplicationPage logout={handleLogout} />)}
+    />
+  );
 
   useEffect(() => {
     if (localStorage.getItem("token")) {
       setAuth(true);
-      setCurrentPage(mapRouter["ApplicationPage"]);
+      setCurrentPage(<ApplicationPage logout={handleLogout} />);
     }
   }, [auth]);
 
