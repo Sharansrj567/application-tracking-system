@@ -222,66 +222,6 @@ def create_app():
         except:
             return jsonify({"error": "Internal server error"}), 500
 
-    # search function
-    # params:
-    #   -keywords: string
-    @app.route("/search")
-    def search():
-        """
-        Searches the web and returns the job postings for the given search filters
-
-        :return: JSON object with job results
-        """
-        keywords = (
-            request.args.get("keywords")
-            if request.args.get("keywords")
-            else "random_test_keyword"
-        )
-        salary = request.args.get("salary") if request.args.get("salary") else ""
-        keywords = keywords.replace(" ", "+")
-        if keywords == "random_test_keyword":
-            return json.dumps({"label": str("successful test search")})
-        # create a url for a crawler to fetch job information
-        if salary:
-            url = (
-                "https://www.google.com/search?q="
-                + keywords
-                + "%20salary%20"
-                + salary
-                + "&ibp=htl;jobs"
-            )
-        else:
-            url = "https://www.google.com/search?q=" + keywords + "&ibp=htl;jobs"
-
-        # webdriver can run the javascript and then render the page first.
-        # This prevent websites don't provide Server-side rendering
-        # leading to crawlers cannot fetch the page
-        chrome_options = Options()
-        # chrome_options.add_argument("--no-sandbox") # linux only
-        chrome_options.add_argument("--headless")
-        user_agent = (
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) "
-            "Chrome/71.0.3578.98 Safari/537.36 "
-        )
-        chrome_options.add_argument(f"user-agent={user_agent}")
-        driver = webdriver.Chrome(
-            ChromeDriverManager().install(), chrome_options=chrome_options
-        )
-        driver.get(url)
-        content = driver.page_source
-        driver.close()
-        soup = BeautifulSoup(content)
-
-        # parsing searching results to DataFrame and return
-        df = pd.DataFrame(columns=["jobTitle", "companyName", "location"])
-        mydivs = soup.find_all("div", {"class": "PwjeAc"})
-        for i, div in enumerate(mydivs):
-            df.at[i, "jobTitle"] = div.find("div", {"class": "BjJfJf PUpOsf"}).text
-            df.at[i, "companyName"] = div.find("div", {"class": "vNEEBe"}).text
-            df.at[i, "location"] = div.find("div", {"class": "Qk80Jf"}).text
-            df.at[i, "date"] = div.find_all("span", class_="SuWscb", limit=1)[0].text
-        return jsonify(df.to_dict("records"))
-
     # get data from the CSV file for rendering root page
     @app.route("/applications", methods=["GET"])
     def get_data():
@@ -319,6 +259,7 @@ def create_app():
                 "id": get_new_application_id(userid),
                 "jobTitle": request_data["jobTitle"],
                 "companyName": request_data["companyName"],
+                "boards.columns":request_data['exobj'],
                 "date": request_data.get("date"),
                 "jobLink": request_data.get("jobLink"),
                 "location": request_data.get("location"),
@@ -330,6 +271,42 @@ def create_app():
             return jsonify(current_application), 200
         except:
             return jsonify({"error": "Internal server error"}), 500
+        
+    @app.route("/boards", methods=["POST"], )
+    def add_boards():
+        """
+        Add a new board for the user
+
+        :return: JSON object with status and message
+        """
+        userid = get_userid_from_header()
+        data = request.form
+        data_dict = data.to_dict()
+        json_string = next(iter(data_dict.keys()))
+        board_data_dict = json.loads(json_string)
+        print(json_string)
+        print(type(board_data_dict["board"]))
+        try:
+            userid = get_userid_from_header()
+            print(userid)
+            try:
+                print(board_data_dict["board"])
+                request_data = board_data_dict["board"]
+                
+                # _ = request_data["boardName"]
+            except:
+                return jsonify({"error": "Missing fields in input"}), 400
+
+            user = Users.objects(id=userid).first()
+            # print(request_data["board"])
+            print(user)
+            # user.update(board_data_dict)
+            user.save()
+            print("Errrrr")
+            return jsonify(board_data_dict), 200
+        except:
+            return jsonify({"error": "Internal server error"}), 500
+        # return '1',200
 
     @app.route("/applications/<int:application_id>", methods=["PUT"])
     def update_application(application_id):
@@ -368,7 +345,7 @@ def create_app():
 
             return jsonify(app_to_update), 200
         except:
-            return jsonify({"error": "Internal server error"}), 500
+            return jsonify({"error": "Internal server error"}), 500    
 
     @app.route("/applications/<int:application_id>", methods=["DELETE"])
     def delete_application(application_id):
@@ -464,7 +441,7 @@ def create_app():
 
 
 app = create_app()
-with open("application.yml") as f:
+with open("backend/application.yml") as f:
     info = yaml.load(f, Loader=yaml.FullLoader)
     username = info["username"]
     password = info["password"]
@@ -475,7 +452,7 @@ with open("application.yml") as f:
 db = MongoEngine()
 db.init_app(app)
 
-
+#TODO change the mappings
 class Users(db.Document):
     """
     Users class. Holds full name, username, password, as well as applications and resumes
