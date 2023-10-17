@@ -3,7 +3,6 @@ import crossIcon from "../assets/icon-cross.svg";
 import boardsSlice from "../redux/boardsSlice";
 import { v4 as uuidv4 } from "uuid";
 import { useDispatch, useSelector } from "react-redux";
-import $ from 'jquery';
 
 function AddEditBoardModal({ setIsBoardModalOpen, type }) {
   const dispatch = useDispatch();
@@ -56,112 +55,6 @@ function AddEditBoardModal({ setIsBoardModalOpen, type }) {
     setNewColumns((prevState) => prevState.filter((el) => el.id !== id));
   };
 
-  // const createNewBoard = (application) => {
-  //   const newApplications = this.state.applications 
-  //   if (application.id == null) {
-  //     // current board is a new board, create a new one and save in the backend.
-  //     $.ajax({
-  //       url: 'http://localhost:5000/boards', // TODO: will have to replace with production URL
-  //       method: 'POST',
-  //       headers: {
-  //         Authorization: 'Bearer ' + localStorage.getItem('token'),
-  //         'Access-Control-Allow-Origin': 'http://localhost:3000',
-  //         'Access-Control-Allow-Credentials': 'true'
-  //       },
-  //       async: false,
-  //       data: JSON.stringify({
-  //         application: application
-  //       }),
-  //       contentType: 'application/json',
-  //       success: (msg) => {
-  //         console.log(msg)
-  //       },
-  //       complete: function (data) {
-  //         newApplications.push(data.responseJSON)
-  //       }
-  //     })
-  //   } else {
-  //     console.log('updating id=' + application.id)
-  //     // $.ajax({
-  //     //   url: 'http://localhost:5000/board/' + application.id,
-  //     //   method: 'PUT',
-  //     //   async: false,
-  //     //   data: JSON.stringify({
-  //     //     application: application
-  //     //   }),
-  //     //   headers: {
-  //     //     Authorization: 'Bearer ' + localStorage.getItem('token'),
-  //     //     'Access-Control-Allow-Origin': 'http://localhost:3000',
-  //     //     'Access-Control-Allow-Credentials': 'true'
-  //     //   },
-  //     //   contentType: 'application/json',
-  //     //   success: (msg) => {
-  //     //     console.log(msg)
-  //     //   },
-  //     //   complete: function (data) {
-  //     //     const updatedApp = data.responseJSON
-  //     //     const idx = newApplications.findIndex(a => a.id === updatedApp.id)
-  //     //     newApplications[idx] = updatedApp
-  //     //   }
-  //     // })
-  //   }
-  //   this.renderPage(newApplications)
-  // }
-  const createNewBoard = () => {
-
-    // const newApplications = board // initialize array
-  
-      // Create new board
-      $.ajax({
-        url: 'http://localhost:5000/boards',  
-        method: 'POST',
-        data: {boardName:boardName},
-        success: (boardName) => {
-          console.log("yessS")
-          // newApplications.push(board);
-        }
-      });
-    // Render UI with updated boards
-    // this.renderPage(newApplications);
-  
-  }
-
-  const deleteBoard = () => {
-
-    // const newApplications = board // initialize array
-  
-      // Create new board
-      $.ajax({
-        url: 'http://localhost:5000/boards',  
-        method: 'DELETE',
-        data: {boardName:boardName},
-        success: (boardName) => {
-          console.log("yessS")
-          // newApplications.push(board);
-        }
-      });
-    // Render UI with updated boards
-    // this.renderPage(newApplications);
-  }
-
-  const editBoard = () => {
-
-    // const newApplications = board // initialize array
-  
-      // Create new board
-      $.ajax({
-        url: 'http://localhost:5000/boards',  
-        method: 'PUT',
-        data: {boardName:boardName},
-        success: (boardName) => {
-          console.log("yessS")
-          // newApplications.push(board);
-        }
-      });
-    // Render UI with updated boards
-    // this.renderPage(newApplications);
-  }
-
   const onSubmit = (type) => {
     setIsBoardModalOpen(false);
     if (type === "add") {
@@ -213,7 +106,6 @@ function AddEditBoardModal({ setIsBoardModalOpen, type }) {
                 className="bg-transparent flex-grow px-4 py-2 rounded-md text-sm border-[0.5px] border-gray-600 focus:outline-[#635fc7] outline-[1px]"
                 onChange={(e) => {
                   onChangeColumnName(column.id, e.target.value);
-                  editBoard(boardName)
                 }}
                 type="text"
                 value={column.name}
@@ -222,7 +114,6 @@ function AddEditBoardModal({ setIsBoardModalOpen, type }) {
                 src={crossIcon}
                 onClick={() => {
                   onDeleteColumn(column.id);
-                  deleteBoard(boardName)
                 }}
                 className="m-4 cursor-pointer"
               />
@@ -244,7 +135,6 @@ function AddEditBoardModal({ setIsBoardModalOpen, type }) {
               onClick={() => {
                 const isValid = validate();
                 if (isValid === true) onSubmit(type);
-                createNewBoard(boardName)
               }}
               className="w-full items-center hover:opacity-70 dark:text-white dark:bg-[#635fc7] mt-8 relative text-white bg-[#635fc7] py-2 rounded-full"
             >

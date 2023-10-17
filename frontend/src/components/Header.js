@@ -56,7 +56,7 @@ function Header({ setIsBoardModalOpen, isBoardModalOpen, logout }) {
         {/* Left Side */}
         <div className="flex items-center space-x-2 md:space-x-4">
           <h3 className="md:text-4xl hidden md:inline-block font-bold font-sans">
-            LinkedSrjIn
+            CareerPulse Tracker
           </h3>
           <div className="flex items-center">
             <h3 className="truncate max-w-[200px] md:text-2xl text-xl font-bold md:ml-20 font-sans">
@@ -89,7 +89,12 @@ function Header({ setIsBoardModalOpen, isBoardModalOpen, logout }) {
           >
             +
           </button>
-          <button className="button md:block" onClick={logout}>
+          <button
+            className="button md:block"
+            onClick={() => {
+              logout();
+            }}
+          >
             Logout
           </button>
           <img

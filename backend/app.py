@@ -18,7 +18,7 @@ import yaml
 import hashlib
 import uuid
 
-existing_endpoints = ["/applications", "/resume"]
+existing_endpoints = ["/applications", "/resume","/boards","/getBoards"]
 
 
 def create_app():
@@ -272,25 +272,41 @@ def create_app():
         except:
             return jsonify({"error": "Internal server error"}), 500
         
+    @app.route("/getBoards", methods=["POST"])
+    def get_boards():
+        try:
+            userid = get_userid_from_header()
+            user = Users.objects(id=userid).first()
+
+            if user:
+                board = user.board  # Access the 'board' field from the user object
+                if board:
+                    return jsonify(board), 200
+            else:
+                return jsonify({"error": "User not found"}), 404
+
+        except Exception as e:
+            return jsonify({"error": "Internal server error"}), 500
+
+
     @app.route("/boards", methods=["POST"], )
     def add_boards():
         """
-        Add a new board for the user
+        Add/Update board for the user
 
         :return: JSON object with status and message
         """
-        userid = get_userid_from_header()
-        data = request.form
-        data_dict = data.to_dict()
-        json_string = next(iter(data_dict.keys()))
-        board_data_dict = json.loads(json_string)
-        print(json_string)
-        print(type(board_data_dict["board"]))
         try:
             userid = get_userid_from_header()
-            print(userid)
+            data = request.form
+            data_dict = data.to_dict()
+            json_string = next(iter(data_dict.keys()))
+            board_data_dict = json.loads(json_string)
+            print("Srj1",json_string)
+            print("Srj2",type(board_data_dict["board"]))
+            print("Srj3",userid)
             try:
-                print(board_data_dict["board"])
+                print("Srj4",board_data_dict["board"])
                 request_data = board_data_dict["board"]
                 
                 # _ = request_data["boardName"]
@@ -298,9 +314,9 @@ def create_app():
                 return jsonify({"error": "Missing fields in input"}), 400
 
             user = Users.objects(id=userid).first()
-            # print(request_data["board"])
-            print(user)
-            # user.update(board_data_dict)
+            if user:
+                print("Srj5",user.fullName)
+            user.update(board=board_data_dict["board"])
             user.save()
             print("Errrrr")
             return jsonify(board_data_dict), 200
@@ -441,7 +457,7 @@ def create_app():
 
 
 app = create_app()
-with open("backend/application.yml") as f:
+with open("application.yml") as f:
     info = yaml.load(f, Loader=yaml.FullLoader)
     username = info["username"]
     password = info["password"]
@@ -465,6 +481,7 @@ class Users(db.Document):
     authTokens = db.ListField()
     applications = db.ListField()
     resume = db.FileField()
+    board=db.ListField()
 
     def to_json(self):
         """

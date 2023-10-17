@@ -1,34 +1,35 @@
 import { createSlice } from "@reduxjs/toolkit";
-import data from "../data.json";
-import $ from 'jquery';
+import $ from "jquery";
 
 const createNewBoard = (board) => {
-    // Create new board
-    $.ajax({
-      url: 'http://localhost:5000/boards',  
-      method: 'POST',
-      headers: {
-        Authorization: 'Bearer ' + localStorage.getItem('token'),
-        'Access-Control-Allow-Origin': 'http://localhost:3000',
-        'Access-Control-Allow-Credentials': 'true'
-      },
-      credentials: 'include',
-      data:JSON.stringify({
-        board: board,
-      }),
-      success: (board) => {
-        console.log("yessS")
-      }
-    });
-  // Render UI with updated boards
-  // this.renderPage(newApplications);
-
-}
+  $.ajax({
+    url: "http://localhost:5000/boards",
+    method: "POST",
+    headers: {
+      Authorization: "Bearer " + localStorage.getItem("token"),
+      "Access-Control-Allow-Origin": "http://localhost:3000",
+      "Access-Control-Allow-Credentials": "true",
+    },
+    credentials: "include",
+    data: JSON.stringify({
+      board: board,
+    }),
+    success: (board) => {
+      console.log("board created", board);
+    },
+  });
+};
 
 const boardsSlice = createSlice({
   name: "boards",
-  initialState: data.boards,
+  initialState: [],
   reducers: {
+    setInitialData: (state, action) => {
+      return (state = action.payload.initialData);
+    },
+    deleteInitialData: (state, action) => {
+      state = [];
+    },
     addBoard: (state, action) => {
       const isActive = state.length > 0 ? false : true;
       const payload = action.payload;
@@ -39,19 +40,19 @@ const boardsSlice = createSlice({
       };
       board.columns = payload.newColumns;
       state.push(board);
-      createNewBoard(board);
+      createNewBoard(state);
     },
     editBoard: (state, action) => {
       const payload = action.payload;
       const board = state.find((board) => board.isActive);
       board.name = payload.name;
       board.columns = payload.newColumns;
-      createNewBoard(board);
+      createNewBoard(state);
     },
     deleteBoard: (state) => {
       const board = state.find((board) => board.isActive);
       state.splice(state.indexOf(board), 1);
-      createNewBoard(board);
+      createNewBoard(state);
     },
     setBoardActive: (state, action) => {
       state.map((board, index) => {
@@ -68,7 +69,7 @@ const boardsSlice = createSlice({
       const board = state.find((board) => board.isActive);
       const column = board.columns.find((col, index) => index === newColIndex);
       column.tasks.push(task);
-      createNewBoard(board);
+      createNewBoard(state);
     },
     editTask: (state, action) => {
       const {
@@ -91,7 +92,7 @@ const boardsSlice = createSlice({
       column.tasks = column.tasks.filter((task, index) => index !== taskIndex);
       const newCol = board.columns.find((col, index) => index === newColIndex);
       newCol.tasks.push(task);
-      createNewBoard(board);
+      createNewBoard(state);
     },
     dragTask: (state, action) => {
       const { colIndex, prevColIndex, taskIndex } = action.payload;
@@ -125,7 +126,7 @@ const boardsSlice = createSlice({
       const board = state.find((board) => board.isActive);
       const col = board.columns.find((col, i) => i === payload.colIndex);
       col.tasks = col.tasks.filter((task, i) => i !== payload.taskIndex);
-      createNewBoard(board);
+      createNewBoard(state);
     },
   },
 });
